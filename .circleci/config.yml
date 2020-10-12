@@ -11,17 +11,52 @@ version: 2.1
 #     description: Revert the last migration if successfully run in the current workflow.
 #     ...
 
+#jobs:
+  #hello-world: # Delete this job when you get started
+    #docker:
+    #  - image: amazon/aws-cli
+    #steps:
+    #  - checkout
+    #  - run:
+    #      name: Say Hello
+    #      command: |
+    #        echo "Hello World"
+
+
+version: 2.1
+
 jobs:
-  hello-world: # Delete this job when you get started
+  build:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - run:
-          name: Say Hello
-          command: |
-            echo "Hello World"
+      - run: npm i
+      - run: npm run lint
+  test:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm i
+      - run: npm run test
+  analyze:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm audit
 
+workflows:
+  my_workflow:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - analyze:
+          requires:
+            - test
 #  build-frontend:
 
 #  build-frontend:
